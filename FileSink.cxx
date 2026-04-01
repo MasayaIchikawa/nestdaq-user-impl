@@ -209,6 +209,8 @@ void FileSink::Init() {}
 //______________________________________________________________________________
 void FileSink::InitTask()
 {
+    fStopRequested = false;
+
     auto get = [this](auto name) -> std::string {
         if (fConfig->Count(name.data()) < 1) {
             LOG(debug) << " variable: " << name << " not found";
@@ -236,7 +238,15 @@ void FileSink::InitTask()
     LOG(info) << __func__ << " fWriteSleepInMilliSec = " << fWriteSleepInMilliSec;
 
     fFile = std::make_unique<FileUtil>();
-    fFile->Init(fConfig->GetVarMap());
+    try {
+        fFile->Init(fConfig->GetVarMap());
+    } catch (...) {
+        LOG(error) << __func__ << ", Invalid File property...";
+        //ChangeStateOrThrow(fair::mq::Transition::Stop);
+        //ChangeState(fair::mq::Transition::Stop);
+        fStopRequested = true;
+	    return;
+    }
     fFile->Print();
     fFileExtension = fFile->GetExtension();
     auto compressFormat = Compressor::ExtToFormat(fFileExtension);
@@ -277,6 +287,11 @@ void FileSink::InitTask()
 //______________________________________________________________________________
 void FileSink::PostRun()
 {
+    if (fStopRequested) {
+        LOG(error) << __LINE__ << ":" << __func__ << ", Stop requested. skip PostRun.";
+        return;
+    }
+
     LOG(info) << __LINE__ << ":" << __func__;
     if (fWorker) {
         fWorker->Join();
@@ -372,6 +387,11 @@ void FileSink::PostRun()
 //______________________________________________________________________________
 void FileSink::PreRun()
 {
+    if (fStopRequested) {
+        LOG(error) << __LINE__ << ":" << __func__ << ", Stop requested. skip PreRun.";
+        return;
+    }
+
     LOG(info) << __LINE__ << ":" << __func__;
     fNReceived = 0;
     fNWrite = 0;
@@ -380,7 +400,17 @@ void FileSink::PreRun()
     fCompressedSize = 0;
 
     if (fConfig->Count(opt::RunNumber.data())) {
-        fRunNumber = std::stoll(fConfig->GetProperty<std::string>(opt::RunNumber.data()));
+        try {
+            fRunNumber = std::stoll(fConfig->GetProperty<std::string>(opt::RunNumber.data()));
+        } catch (const std::exception &e) {
+            LOG(error) << "Invalid Run number: " << e.what();
+            //ChangeState(fair::mq::Transition::Stop);
+            fStopRequested = true;
+	} catch (...) {
+            LOG(error) << "Invalid Run number: " << fConfig->GetProperty<std::string>(opt::RunNumber.data());
+            //ChangeState(fair::mq::Transition::Stop);
+            fStopRequested = true;
+	}
         LOG(debug) << " Run number: " << fRunNumber;
     }
     if (fConfig->Count("registry-uri")) {
