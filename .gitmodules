@@ -1,0 +1,6 @@
+[submodule "sub/NestdaqAnalyzer"]
+	path = sub/NestdaqAnalyzer
+	url = git@github.com:MasayaIchikawa/NestdaqAnalyzer
+[submodule "sub/NestdaqUnpacker"]
+	path = sub/NestdaqUnpacker
+	url = git@github.com:MasayaIchikawa/NestdaqUnpacker
