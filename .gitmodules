@@ -4,3 +4,6 @@
 [submodule "sub/NestdaqUnpacker"]
 	path = sub/NestdaqUnpacker
 	url = git@github.com:MasayaIchikawa/NestdaqUnpacker
+[submodule "sub/NestDAQ-HbdMonitor"]
+	path = sub/NestDAQ-HbdMonitor
+	url = git@github.com:MasayaIchikawa/NestDAQ-HbdMonitor
