@@ -1,9 +1,9 @@
 [submodule "sub/NestdaqAnalyzer"]
 	path = sub/NestdaqAnalyzer
-	url = git@github.com:MasayaIchikawa/NestdaqAnalyzer
+	url = git@github.com:knucl/NestdaqAnalyzer
 [submodule "sub/NestdaqUnpacker"]
 	path = sub/NestdaqUnpacker
-	url = git@github.com:MasayaIchikawa/NestdaqUnpacker
+	url = git@github.com:knucl/NestdaqUnpacker
 [submodule "sub/NestDAQ-HbdMonitor"]
 	path = sub/NestDAQ-HbdMonitor
-	url = git@github.com:MasayaIchikawa/NestDAQ-HbdMonitor
+	url = git@github.com:knucl/NestDAQ-HbdMonitor
